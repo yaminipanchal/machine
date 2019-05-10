@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ./partials/head %>
+</head>
+
+<body>
+    <header>
+        <% include ./partials/header %>
+    </header>
+    <!--    top nav end===========-->
+    <div class="wrapper" id="wrapper">
+        <div class="left-container" id="left-container">
+            <!-- begin SIDE NAV USER PANEL -->
+            <% include ./partials/leftMenu %>
+            <!-- END SIDE NAV USER PANEL -->
+        </div>
+        <div class="right-container" id="right-container">
+            <div class="container-fluid">
+                <h5>Machine Details:</h5>
+                <div class="">
+                    <div class="col-lg-4 col-sm-4">
+                        <form id="machineForm" name="machineForm">
+                            <div class="form-group">
+                                <label>Name:</label>
+                                <input type="text" name="name" id="machinename" class="form-control" required="true">
+                            </div>
+                            <div class="form-group">
+                                <label>Category:</label>
+                                <select name="category" id="category" class="form-control" required="true">
+                                    <option value="null">Select Category</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label> Number of Machine(Qty):</label>
+                                <input type="number" name="qty" id="qty" class="form-control" required="true">
+                            </div>
+                            <div class="form-group">
+                                <label>Production Capacity:</label>
+                                <input type="number" name="capacity_per_hr" id="capacity_per_hr" class="form-control" required="true">
+                            </div>
+                            <div class="form-group">
+                                <label>Production Cost per hour:</label>
+                                <input type="number" name="cost_per_hr" id="cost_per_hr" class="form-control" required="true">
+                            </div>
+                            <!--  <div><input type="submit" class="btn btn-primary addForm" value="ADD"></div> -->
+                            <div><input type="button" class="btn btn-primary addForm" value="ADD"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  <script src="js/jquery-3.1.1.js"></script>
+    <script src="js/bootstrap.js"></script> -->
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#machineForm').on('submit', function(event) {
+            setTimeout(function() {
+
+                alert('submitted');
+                event.preventDefault();
+                window.location.href = "/machineList"
+            }, 1000)
+        });
+        $(".addForm").click(function() {
+            var obj = {};
+            obj.name = $("#machinename").val().trim();
+            obj.category = $("#category").val().trim();
+            obj.qty = $("#qty").val().trim();
+            obj.cost_per_hr = $("#cost_per_hr").val().trim();
+            obj.capacity_per_hr = $("#capacity_per_hr").val().trim();
+            console.log(obj)
+            if (obj.name == "" || obj.category == "null" || obj.qty == "" || obj.cost_per_hr == "" || obj.capacity_per_hr == "") {
+                alert("All Fields must be required.");
+                return;
+            } else {
+
+                $.ajax({
+                    url: "/api/add_machine",
+                    type: "POST",
+                    data: obj,
+                    success: function(data) {
+                        if (data) {
+                            window.location.href = "/machineList"
+                        }
+
+                    },
+                    error: function(jqXHR, status, error) {
+                        alert(jqXHR.responseJSON.msg)
+                    }
+
+                })
+            }
+        })
+
+
+        $.ajax({
+            url: "/api/list_category",
+            type: "GET",
+            // data: { "name": name },
+            success: function(data) {
+                console.log(data)
+                for (var i = 0; i < data.data.length; i++) {
+                    data.data[i]
+                    $("#category").append("<option value='" + data.data[i]._id + "'>" + data.data[i].name + "</option>")
+                }
+
+            },
+            error: function(jqXHR, status, error) {
+
+                alert(jqXHR.responseJSON.msg)
+            }
+
+        });
+
+
+
+
+
+    });
+    </script>
+</body>
+
+</html>

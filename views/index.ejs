@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ./partials/head %>
+</head>
+
+<body>
+    <header>
+        <% include ./partials/header %>
+    </header>
+    <!--    top nav end===========-->
+    <div class="wrapper" id="wrapper">
+        <div class="left-container" id="left-container">
+            <!-- begin SIDE NAV USER PANEL -->
+            <% include ./partials/leftMenu %>
+            <!-- END SIDE NAV USER PANEL -->
+        </div>
+        <div class="right-container" id="right-container">
+            <div class="container-fluid">
+                <!--  <div class="row">
+                    <div class="col-md-4">
+                        <ul class="breadcrumb">
+                            <li><i class="fa fa-home"></i><a href="#"> Home</a></li>
+                            <li class="active">Dashboard</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-8">
+                        <ul class="list-inline pull-right mini-stat">
+                            <li>
+                                <h5>LIKES <span class="stat-value color-blue"><i class="fa fa-plus-circle"></i> 81,450</span></h5>
+                            </li>
+                            <li>
+                                <h5>SUBSCRIBERS <span class="stat-value color-green"><i class="fa fa-plus-circle"></i> 150,743</span></h5>
+                            </li>
+                            <li>
+                                <h5>CUSTOMERS <span class="stat-value color-orang"><i class="fa fa-plus-circle"></i> 43,748</span></h5>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="main-header">
+                            <h2>DASHBOARD</h2>
+                            <em>the first priority information</em>
+                        </div>
+                    </div>
+                </div>
+                <div class="row padding-top">
+                    <div class="col-md-6"><img src="https://www.amcharts.com/wp-content/uploads/2016/03/demo_6559_light-1.jpg" class="img-responsive"></div>
+                    <div class="col-md-6"><img src="https://www.amcharts.com/wp-content/uploads/2013/12/demo_7404_light.jpg" class="img-responsive"></div>
+                </div>
+                <div class="row padding-top">
+                    <div class="col-md-6"><img src="https://www.amcharts.com/wp-content/uploads/2013/12/demo_7406_light.jpg" class="img-responsive"></div>
+                    <div class="col-md-6"><img src="https://www.amcharts.com/wp-content/uploads/2013/12/demo_7403_light.jpg" class="img-responsive"></div>
+                </div> -->
+                <div class="row">
+                    <div class="col-lg-4 col-sm-4">
+                        <h5>Create Category</h5>
+                        <form class="createCat" name="createCat">
+                            <div class="">
+                                <div class="form-group">
+                                    <label>Name:</label>
+                                    <input type="text" name="catName" id="catName">
+                                    <span class="btn btn-primary addCat">Add</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-lg-8 col-sm-8">
+                        <h5>Category List</h5>
+                        <table id="example" class="display" width="100%"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  <script src="js/jquery-3.1.1.js"></script>
+    <script src="js/bootstrap.js"></script> -->
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var dataSet = [],
+            table;
+        $.ajax({
+            url: "/api/list_category",
+            type: "GET",
+            data: { "name": name },
+            success: function(data) {
+                console.log(data)
+                var dataSet = new Array;
+                if (!('error' in data.data)) {
+                    $.each(data.data, function(index, value) {
+                        // console.log(index, value)
+                        var tempArray = new Array;
+                        for (var o in value) {
+
+                            tempArray.push(value[o]);
+                        }
+
+
+                        dataSet.push(tempArray);
+                    })
+                    table = $('#example').DataTable({
+                        data: dataSet,
+                        columns: [
+                            { title: "Id" },
+                            { title: "Name" },
+                            { title: "createdAt" },
+                            { title: "Action" }
+
+                        ],
+                        "order": [
+                            [2, "desc"]
+                        ],
+                        "columnDefs": [{
+                            "targets": [2],
+                            "visible": false,
+                            "searchable": false
+                        }, {
+                            "targets": [2],
+                            "visible": false,
+                            "searchable": false
+                        }, {
+                            "targets": -1,
+                            "data": null,
+                            "defaultContent": "<button class='delete_cat'>Delete</button> <button class='edit_cat'>Edit</button>"
+                        }],
+                        select: true
+                    });
+
+
+                }
+
+            },
+            error: function(jqXHR, status, error) {
+                // console.log(error)
+                alert(jqXHR.responseText)
+            }
+
+        })
+        setTimeout(function() {
+
+            $('#example tbody td').on('click', 'button.delete_cat', function() {
+                var data = table.row($(this).parents('tr')).data();
+                // console.log(data)
+                $.ajax({
+                    url: "/api/delete_category/" + data[0],
+                    type: "DELETE",
+
+                    success: function(data) {
+
+                        if (data) {
+                            alert("Category has been deleted !!")
+                            window.location.reload();
+                        }
+
+                    },
+                    error: function(jqXHR, status, error) {
+
+                        alert(jqXHR.responseText)
+                    }
+
+                })
+
+            });
+
+            $('#example tbody td').on('click', 'button.edit_cat', function() {
+
+                var u_name = prompt("Please enter Name", "");
+                if (u_name != null) {
+
+                    var data = table.row($(this).parents('tr')).data();
+                    $.ajax({
+                        url: "/api/update_category/" + data[0],
+                        type: "PUT",
+                        data: { "name": u_name },
+                        success: function(data) {
+                            // console.log(data)
+                            if (data) {
+                                alert("Category has been updated !!")
+                                window.location.reload();
+                            }
+
+                        },
+                        error: function(jqXHR, status, error) {
+                            alert(jqXHR.responseText)
+                        }
+
+                    })
+
+                }
+            });
+
+        }, 1000)
+        $(".addCat").click(function() {
+            var name = $("#catName").val();
+            if (name !== "") {
+                $.ajax({
+                    url: "/api/add_category",
+                    type: "POST",
+                    data: { "name": name },
+                    success: function(data) {
+                        // console.log(data)
+                        if (data) {
+                            alert("Category has been inserted !!")
+                            window.location.reload();
+                        }
+                        // alert(data.msg)
+                        // window.location.href = "/login"
+                        // your code here
+                    },
+                    error: function(jqXHR, status, error) {
+
+                        alert(jqXHR.responseText)
+                    }
+
+                })
+            }
+        })
+    });
+    </script>
+</body>
+
+</html>
