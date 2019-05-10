@@ -8,7 +8,7 @@ npm install
 
 node server.js 
 
-App run on port = 3000
+App will be run on port = 3000
 
 Functionalities:
 
