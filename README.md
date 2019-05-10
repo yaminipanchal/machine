@@ -3,7 +3,9 @@
 Requirement : mongo database and start it's service prior.
 
 Run :
+
 npm install
+
 node server.js 
 
 App run on port = 3000
